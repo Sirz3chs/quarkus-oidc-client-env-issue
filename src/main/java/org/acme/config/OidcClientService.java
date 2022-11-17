@@ -17,6 +17,12 @@ import org.jboss.logging.Logger;
 public class OidcClientService {
 
     /**
+     * Default client, not named
+     */
+    @Inject
+    protected OidcClient defaultClient;
+
+    /**
      * Client declared in application.properties file
      */
     @Inject
@@ -31,7 +37,7 @@ public class OidcClientService {
     protected OidcClient envClient;
 
     /**
-     * Client declared in .env file
+     * Client declared in application.properties file but use .env configs
      */
     @Inject
     @NamedOidcClient("env-client-from-prop")
@@ -49,20 +55,25 @@ public class OidcClientService {
             .filter(prop -> pattern.matcher(prop.toLowerCase()).find())
             .sorted()
             .forEach(prop -> log.debug(prop + "=" + config.getOptionalValue(prop, String.class).orElse("")));
+        log.info("default client: " + defaultClient);
         log.info("prop-client: " + propClient);
         log.info("env-client: " + envClient);
         log.info("env-client-from-prop: " + envClientFromProp);
     }
 
-    public Uni<Tokens> getPropUser() {
+    public Uni<Tokens> getDefaultToken() {
+        return defaultClient.getTokens();
+    }
+
+    public Uni<Tokens> getPropToken() {
         return propClient.getTokens();
     }
 
-    public Uni<Tokens> getEnvUser() {
+    public Uni<Tokens> getEnvToken() {
         return envClient.getTokens();
     }
 
-    public Uni<Tokens> getEnvUserFromProp() {
+    public Uni<Tokens> getEnvTokenFromProp() {
         return envClientFromProp.getTokens();
     }
 }

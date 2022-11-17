@@ -13,8 +13,17 @@ public class OidcClientServiceTest {
     protected OidcClientService oidcClientService;
 
     @Test
+    public void testDefaultClient() {
+        oidcClientService.getDefaultToken()
+            .subscribe()
+            .withSubscriber(UniAssertSubscriber.create())
+            .awaitItem()
+            .assertCompleted();
+    }
+
+    @Test
     public void testPropClient() {
-        oidcClientService.getPropUser()
+        oidcClientService.getPropToken()
             .subscribe()
             .withSubscriber(UniAssertSubscriber.create())
             .awaitItem()
@@ -23,12 +32,13 @@ public class OidcClientServiceTest {
 
     @Test
     public void testEnvClient() {
-        assertThrows(NullPointerException.class, () -> oidcClientService.getEnvUser().await().indefinitely());
+        assertThrows(NullPointerException.class, () -> oidcClientService.getEnvToken().await().indefinitely());
     }
 
     @Test
     public void testEnvClientFromProp() {
-        oidcClientService.getEnvUserFromProp()
+        // Grant options not present ?
+        oidcClientService.getEnvTokenFromProp()
             .subscribe()
             .withSubscriber(UniAssertSubscriber.create())
             .awaitItem()
